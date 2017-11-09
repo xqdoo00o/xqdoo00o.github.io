@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+    </style>
+</head>
+<body>
+
+<div class="browser">
+    <label>
+        <input type="file" id="getfileinput" title='点击选择文件'>
+    </label>
+    <textarea rows="9" id="url" style="width: 600px;" data-emoji_font="true"></textarea>
+</div>
+
+<script type="text/javascript">
+    var lSrc = document.createElement("script");
+    lSrc.type = 'text/javascript';
+    lSrc.src = "https://cdn.bootcss.com/ipfs/0.26.0/index.min.js"
+    document.getElementsByTagName("head")[0].appendChild(lSrc);
+    lSrc.onload = function () {
+        const repoPath = 'ipfs-' + Math.random()
+        const node = new Ipfs({
+            init: false,
+            start: false,
+            repo: repoPath
+        });
+        node.init(handleInit);
+
+        function handleInit(err) {
+            if (err) {
+                throw err
+            }
+            node.start(function () {
+                console.log('Online status: ', node.isOnline() ? 'online' : 'offline')
+            })
+        }
+
+        // \u52a0\u8f7d\u6587\u4ef6
+        document.querySelector('#getfileinput').addEventListener('change', function () {
+            var that = this, filereader;
+            console.log(that.files[0].name);
+            var upFileName = that.files[0].name;
+            var index1 = upFileName.lastIndexOf(".");
+            var index2 = upFileName.length;
+            var upFileSuffix = upFileName.substring(index1 + 1, index2);
+            if (that.files.length > 0) {
+                filereader = new FileReader();
+                filereader.onload = function (e) {
+                    if (node.isOnline()) {
+                        node.files.add(new node.types.Buffer(this.result), function (err,res) {
+                                if(err || !res){
+                                    return console.error('Error - ipfs files add', err, res)
+                                }
+                                res.forEach(function(file){
+                                    upload_result(file.hash, upFileSuffix)
+                                })
+                        }
+                    )
+                    } else {
+                        alert('\u8fd8\u6ca1\u51c6\u5907\u597d,\u8bf7\u7a0d\u5019\u518d\u8bd5');
+                    }
+                }
+                ;
+                filereader.readAsArrayBuffer(that.files[0]);
+            }
+        }, false);
+
+        function upload_result(fileHash, fileSuffix) {
+            var server = Math.floor(Math.random() * 5);
+            var picurl = 'http://ipfs.io/ipfs/' + fileHash + '?' + server + '.' + fileSuffix;
+            document.getElementById('url').append(picurl+ '\n');
+        }
+    }
+
+</script>
+</body>
+</html>
