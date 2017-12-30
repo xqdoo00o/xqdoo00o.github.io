@@ -12,28 +12,28 @@
     </style>
 </head>
 <body>
-<textarea id="input" placeholder="需要混淆的代码"></textarea>
-<button id="go">混淆</button>
-<textarea id='output' placeholder="混淆后的代码"></textarea>
-<script type="text/javascript">
-    var input = document.getElementById('input');
-    var output = document.getElementById('output');
-    document.getElementById('go').onclick=_=>{
-       if(input.value.length ===0){
-           alert('empty Code!');
-           return;
-       }
-       var code = input.value.replace(/[^\x00-\xff]/ug, a=>{
-           var b = a.codePointAt(0).toString(16);
-           return b.length === 5 ? "\\u{" + b + "}" : "\\u" + ('0' + b).slice(-4)
-       }).split("")
-           .map(c => ("000" + c.codePointAt(0).toString(4))
-                   .slice(-4)
-				   .replace(/([0|1|2|3])/g, d=>['\u200b','\u200c','\u200d','\ufeff'][d])
-           )
-           .join("");
-	        output.value = 'Function("\uffa0",'+'"\uffa0(\'' + code + '\'.replace(/.{4}/g,f=>String.fromCodePoint(parseInt(f.replace(/[\u200b|\u200c|\u200d|\ufeff]/g,e=>({\'\u200b\':0,\'\u200c\':1,\'\u200d\':2,\'\ufeff\':3}[e])),4))).replace(/\\\\u([a-f\\d]{4}|{([a-f\\d]{5})})/gi,(x,y,z)=>String.fromCodePoint(\'0x\'+(z||y))))")(eval)';
-   }
-</script>
+    <textarea id="input" placeholder="before"></textarea>
+    <button id="go">Obfuscation</button>
+    <textarea id='output' placeholder="after"></textarea>
+    <script type="text/javascript">
+        var input = document.getElementById('input');
+        var output = document.getElementById('output');
+        document.getElementById('go').onclick = () => {
+            if (input.value.length === 0) {
+                alert('empty Code!');
+                return;
+            }
+            let code = input.value.replace(/[^\x00-\xff]/ug, a => {
+                let b = a.codePointAt(0).toString(16);
+                return b.length === 5 ? "\\u{" + b + "}" : "\\u" + ('0' + b).slice(-4)
+            }).split("")
+                .map(c => {
+                    let d = c.codePointAt(0).toString(16);
+                    return (d.length === 1 ? ("0" + d):d).replace(/[0-9a-f]/g, e => String.fromCodePoint('0xfe0' + e))
+                })
+              .join("");
+            output.value = 'eval("' + code + '".replace(/.{2}/g,f=>String.fromCodePoint(\'0x\'+f.replace(/./g,g=>(g.codePointAt(0)&15).toString(16)))).replace(/\\\\u([a-f\\d]{4}|{([a-f\\d]{5})})/gi,(x,y,z)=>String.fromCodePoint(\'0x\'+(z||y))))'
+        }
+    </script>
 </body>
 </html>
