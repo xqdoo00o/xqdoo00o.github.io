@@ -12,13 +12,13 @@
     <script>
     let r=document.getElementById('r');
         let a = document.getElementById('a');
-         r.onmouseover=function () {
+         r.onmouseenter=function () {
        a.style.display='block';
     };
-    r.onmouseout=function () {
+    r.onmouseleave=function () {
         a.style.display='none';
     };
-        a.onmouseover=function () {
+        a.onmouseenter=function () {
         this.style.display='block';
     };
     a.onclick=function () {
