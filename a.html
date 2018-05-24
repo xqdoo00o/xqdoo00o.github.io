@@ -12,19 +12,19 @@
     <script>
     let r=document.getElementById('rr');
         let a = document.getElementById('aa');
-         r.onmouseenter=function () {
+         r.onmouseover=function () {
        a.style.display='block';
     };
-    r.onmouseleave=function () {
+    r.onmouseout=function () {
         a.style.display='none';
     };
-        a.onmouseenter=function () {
+        a.onmouseover=function () {
         this.style.display='block';
     };
     a.onclick=function () {
         this.style.display='none';
     };
-    a.onmouseleave=function () {
+    a.onmouseout=function () {
         this.style.display='none';
     };
     </script>
